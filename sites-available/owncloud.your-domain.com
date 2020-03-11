@@ -19,6 +19,8 @@ server {
         server_name <owncloud.your-domain.com>;
 
         # ssl letsencrypt
+        # remark that line when manually setting up letsencrypt the first time as the files must be created
+        # un-remark when done
         include /etc/nginx/ssl_rules/ssl_<owncloud.your-domain.com>;
 
         # no variables can be used, therefore not in shared_owncloud.conf
