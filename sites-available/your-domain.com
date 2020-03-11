@@ -19,6 +19,8 @@ server {
         server_name <your-domain.com> www.<your-domain.com>;
 
         # ssl letsencrypt
+        # remark that line when manually setting up letsencrypt the first time as the files must be created
+        # un-remark when done
         include /etc/nginx/ssl_rules/ssl_<your-domain.com>;
 
         access_log /var/log/nginx/<your-domain.com>.access_log;
