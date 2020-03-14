@@ -1,0 +1,109 @@
+# include config for shared wordpress site
+
+include /etc/nginx/common_rules/shared_close_wordpress.conf;
+include /etc/nginx/common_rules/shared_close_connection.conf;
+include /etc/nginx/common_rules/shared_hidemywpghost.conf;
+
+## shared configuration for wordpress sites eg dev/live
+#
+# Global restrictions configuration file.
+# Designed to be included in any server {} block.
+
+location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+}
+
+location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+}
+
+# Deny all attempts to access hidden files such as
+# .htaccess, .htpasswd, .DS_Store (Mac).
+# Keep logging the requests to parse later
+# (or to pass to firewall utilities such as fail2ban)
+
+location ~ /\. {
+    deny all;
+}
+
+# Deny access to any files with a .php extension in the uploads directory
+# Works in sub-directory installs and also in multisite network
+# Keep logging the requests to parse later
+# (or to pass to firewall utilities such as fail2ban)
+
+location ~* /(?:uploads|files)/.*\.php$ {
+    deny all;
+}
+
+# serve pre-compressed css and js files from all directories
+
+location ~* .(css|js)$ {
+    gzip_static on;
+    add_header Cache-Control "public, max-age=604800, must_revalidate" always;
+    include /etc/nginx/common_rules/shared_headers.conf;
+}
+
+# serve images from all directories
+
+location ~* .(png|svg|ico|jp?g)$ {
+    add_header Cache-Control "public, max-age=604800, must_revalidate" always;
+    include /etc/nginx/common_rules/shared_headers.conf;
+}
+
+# serve pre-compressed font files in folder fonts
+# no gzip for woff and woff2 as they are already compressed
+# ^ = beginning of line
+
+location ~* ^/wp-content/themes/fonts/.*\.(eot|otf|ttf|ttc|svg)$ {
+    gzip_static on;
+    add_header Cache-Control "public, max-age=604800, must_revalidate" always;
+    include /etc/nginx/common_rules/shared_headers.conf;
+    }
+
+location ~ .(php)$ {
+
+    fastcgi_split_path_info ^(.+\.php)(/.*)$;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_param HTTPS on;
+    fastcgi_param front_controller_active true;
+    fastcgi_read_timeout 180;
+    fastcgi_pass php-handler;
+    fastcgi_intercept_errors on;
+    #fastcgi_buffering off;
+    fastcgi_request_buffering off;
+    fastcgi_ignore_headers X-Accel-Buffering;
+
+    ## Begin - FastCGI caching
+      fastcgi_ignore_headers  "Cache-Control"
+                              "Expires"
+                              "Set-Cookie";
+      fastcgi_cache_use_stale error
+                              timeout
+                              updating
+                              http_429
+                              http_500
+                              http_503;
+      fastcgi_cache_background_update on;
+      #  map for $skip_cache is in conf.d/common_map.conf
+      fastcgi_no_cache $skip_cache;
+      fastcgi_cache_bypass $skip_cache;
+      fastcgi_cache cachezone;
+      fastcgi_cache_valid  60m;
+      fastcgi_cache_methods GET HEAD;
+    ## End - FastCGI caching
+}
+
+# serve all other data
+
+location / {
+    gzip_static on;
+    add_header Cache-Control "public, max-age=604800, must_revalidate" always;
+    include /etc/nginx/common_rules/shared_headers.conf;
+#    try_files $uri $uri/ /index.php?$args;
+}
