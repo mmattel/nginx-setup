@@ -27,7 +27,7 @@ server {
         error_log  /var/log/nginx/<your-domain.com>.error_log;
 
         root /var/www/<your-domain.com>;
-        index index.html;
+        index index.php index.html;
 
         # include shared headers
         include /etc/nginx/common_rules/shared_headers.conf;
@@ -37,7 +37,9 @@ server {
 
         # include all access to be return 444 (close connection)
         include /etc/nginx/common_rules/shared_close_connection.conf;
+        include /etc/nginx/common_rules/shared_close_wordpress.conf;
 
+        # add whatever is needed to run your site
         location = /robots.txt {
             allow all;
             log_not_found off;
