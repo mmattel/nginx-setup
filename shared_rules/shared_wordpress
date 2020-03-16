@@ -1,8 +1,8 @@
 # include config for shared wordpress site
 
-include /etc/nginx/common_rules/shared_close_wordpress.conf;
-include /etc/nginx/common_rules/shared_close_connection.conf;
-include /etc/nginx/common_rules/shared_hidemywpghost.conf;
+include /etc/nginx/shared_rules/shared_close_wordpress.conf;
+include /etc/nginx/shared_rules/shared_close_connection.conf;
+include /etc/nginx/shared_rules/shared_hidemywpghost.conf;
 
 ## shared configuration for wordpress sites eg dev/live
 #
@@ -43,14 +43,14 @@ location ~* /(?:uploads|files)/.*\.php$ {
 location ~* .(css|js)$ {
     gzip_static on;
     add_header Cache-Control "public, max-age=604800, must_revalidate" always;
-    include /etc/nginx/common_rules/shared_headers.conf;
+    include /etc/nginx/shared_rules/shared_headers.conf;
 }
 
 # serve images from all directories
 
 location ~* .(png|svg|ico|jp?g)$ {
     add_header Cache-Control "public, max-age=604800, must_revalidate" always;
-    include /etc/nginx/common_rules/shared_headers.conf;
+    include /etc/nginx/shared_rules/shared_headers.conf;
 }
 
 # serve pre-compressed font files in folder fonts
@@ -60,7 +60,7 @@ location ~* .(png|svg|ico|jp?g)$ {
 location ~* ^/wp-content/themes/fonts/.*\.(eot|otf|ttf|ttc|svg)$ {
     gzip_static on;
     add_header Cache-Control "public, max-age=604800, must_revalidate" always;
-    include /etc/nginx/common_rules/shared_headers.conf;
+    include /etc/nginx/shared_rules/shared_headers.conf;
     }
 
 location ~ .(php)$ {
@@ -104,6 +104,6 @@ location ~ .(php)$ {
 location / {
     gzip_static on;
     add_header Cache-Control "public, max-age=604800, must_revalidate" always;
-    include /etc/nginx/common_rules/shared_headers.conf;
+    include /etc/nginx/shared_rules/shared_headers.conf;
 #    try_files $uri $uri/ /index.php?$args;
 }

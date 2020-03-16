@@ -32,5 +32,5 @@ server {
         set $instance <owncloud.your-domain.com>;
 
         # include shared headers
-        include /etc/nginx/common_rules/shared_owncloud.conf;
+        include /etc/nginx/shared_rules/shared_owncloud.conf;
 }

@@ -30,14 +30,14 @@ server {
         index index.php index.html;
 
         # include shared headers
-        include /etc/nginx/common_rules/shared_headers.conf;
+        include /etc/nginx/shared_rules/shared_headers.conf;
 
         # include site error management
         include /etc/nginx/sites-available/error_sites;
 
         # include all access to be return 444 (close connection)
-        include /etc/nginx/common_rules/shared_close_connection.conf;
-        include /etc/nginx/common_rules/shared_close_wordpress.conf;
+        include /etc/nginx/shared_rules/shared_close_connection.conf;
+        include /etc/nginx/shared_rules/shared_close_wordpress.conf;
 
         # add whatever is needed to run your site
         location = /robots.txt {
