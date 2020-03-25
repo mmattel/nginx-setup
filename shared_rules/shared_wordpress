@@ -1,13 +1,14 @@
-# include config for shared wordpress site
+## shared configuration for site *.innovation
+# Global restrictions configuration file.
+# Designed to be included in any server {} block.
 
+# include config for shared innovation
 include /etc/nginx/shared_rules/shared_close_wordpress.conf;
 include /etc/nginx/shared_rules/shared_close_connection.conf;
 include /etc/nginx/shared_rules/shared_hidemywpghost.conf;
 
-## shared configuration for wordpress sites eg dev/live
-#
-# Global restrictions configuration file.
-# Designed to be included in any server {} block.
+# see also php.ini files
+client_max_body_size 30M;
 
 location = /favicon.ico {
     log_not_found off;
@@ -38,9 +39,21 @@ location ~* /(?:uploads|files)/.*\.php$ {
     deny all;
 }
 
+# BEGIN W3TC Page Cache cache
+location ~ /wp-content/cache/page_enhanced.*gzip$ {
+    gzip off;
+    types {}
+    default_type text/html;
+    add_header Content-Encoding gzip;
+    if_modified_since exact;
+    add_header Referrer-Policy "no-referrer-when-downgrade";
+    include /etc/nginx/shared_rules/shared_headers.conf;
+}
+# END W3TC Page Cache cache
+
 # serve pre-compressed css and js files from all directories
 
-location ~* .(css|js)$ {
+location ~* .(css|js?|htc|less)$ {
     gzip_static on;
     add_header Cache-Control "public, max-age=604800, must_revalidate" always;
     include /etc/nginx/shared_rules/shared_headers.conf;
@@ -90,7 +103,7 @@ location ~ .(php)$ {
                               http_500
                               http_503;
       fastcgi_cache_background_update on;
-      #  map for $skip_cache is in conf.d/common_map.conf
+      #  map for $skip_cache is in common_map.conf
       fastcgi_no_cache $skip_cache;
       fastcgi_cache_bypass $skip_cache;
       fastcgi_cache cachezone;
