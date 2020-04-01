@@ -9,6 +9,8 @@ include /etc/nginx/shared_rules/shared_hidemywpghost.conf;
 
 # see also php.ini files (post_max_size, upload_max_filesize)
 client_max_body_size 30M;
+fastcgi_buffers 16 16K;
+fastcgi_buffer_size 32k;
 
 location = /favicon.ico {
     log_not_found off;
